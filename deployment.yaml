@@ -1,0 +1,30 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: azdcker 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: azdcker
+  template:
+    metadata:
+      labels:
+        app: azdcker 
+    spec:
+      containers:
+        - name: azdcker 
+          image: wabconatianer.azurecr.io/azdcker
+          ports:
+          - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: azdcker
+spec:
+    type: LoadBalancer
+    ports:
+    - port: 80 
+    selector:
+        app: azdcker

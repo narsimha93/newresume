@@ -1,0 +1,39 @@
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  ACR_NAME: wabcontainer
+  ACR_LOGIN_SERVER: wabcontainer.azurecr.io
+  IMAGE_NAME: your-image-name
+  TAG: $(Build.BuildId)
+
+steps:
+- task: Docker@2
+  inputs:
+    containerRegistry: '$(ACR_NAME)'
+    repository: '$(IMAGE_NAME)'
+    command: 'buildAndPush'
+    Dockerfile: '**/Dockerfile'
+    tags: |
+      $(TAG)
+
+- task: CopyFiles@2
+  inputs:
+    contents: 'deployment.yaml'
+    targetFolder: '$(Build.ArtifactStagingDirectory)'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+
+- task: KubernetesManifest@1
+  inputs:
+    action: 'deploy'
+    connectionType: 'kubernetesServiceConnection'
+    kubernetesServiceConnection: 'wabtest-test'
+    namespace: 'default'
+    manifests: '$(Build.ArtifactStagingDirectory)/deployment.yaml'

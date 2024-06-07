@@ -4,21 +4,14 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
-variables:
-  ACR_NAME: wabcontainer
-  ACR_LOGIN_SERVER: wabcontainer.azurecr.io
-  IMAGE_NAME: your-image-name
-  TAG: $(Build.BuildId)
-
 steps:
 - task: Docker@2
   inputs:
-    containerRegistry: '$(ACR_NAME)'
-    repository: '$(IMAGE_NAME)'
+    containerRegistry: 'wabconatianer'
+    repository: 'your-repository-name'
     command: 'buildAndPush'
     Dockerfile: '**/Dockerfile'
-    tags: |
-      $(TAG)
+    tags: '$(Build.BuildId)'
 
 - task: CopyFiles@2
   inputs:
